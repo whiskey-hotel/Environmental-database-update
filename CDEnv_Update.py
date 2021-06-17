@@ -118,9 +118,9 @@ def from_projects_wks(starting_row, client_array, client_search, news_array, new
     Args:
         starting_row (list): CD Projects row with pertinent data
         client_array (list): Nested list from Client database
-        client_search (str): Client search term
+        client_search (list): One dimensional list of clients 
         news_array (list): Nested list from Newspaper database
-        news_search (str): Newspaper search term
+        news_search (list): One dimensional list of newspapers
 
     Returns:
         list: New list of elements from CD Projects database, Client database
@@ -238,7 +238,7 @@ def from_np_wks(new_row, np_array, np_line):
 
     Args:
         new_row (list): New list for the CD Env database
-        np_array (list): Bested list from Newspaper database
+        np_array (list): Nested list from Newspaper database
         np_line (list): List of Newspaper information
 
     Returns:
