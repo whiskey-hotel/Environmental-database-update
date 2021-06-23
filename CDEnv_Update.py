@@ -10,16 +10,10 @@
 # Version:     0.1.1
 # -------------------------------------------------------------------------------
 
+
+from datetime import datetime
 from openpyxl import workbook, load_workbook
-
-
-def main():
-    pass
-
-
-if __name__ == '__main__':
-    main()
-
+print('...Update process intialized...')
 
 # open and define workbooks
 print('...Loading workbooks...')
@@ -33,7 +27,7 @@ env_wkb = load_workbook(
     "G:\\Shared drives\\Database\\Tables for Merge\\Working\\CD Env Review_5.12.2020_NEP DO NOT OVERWRITE.xlsx")
 
 # define worksheets
-print('Loading worksheets')
+print('...Loading worksheets...')
 project_wks = project_wkb["CD Projects"]
 client_wks = client_wkb["Clients"]
 np_wks = np_wkb["Newspapers"]
@@ -57,7 +51,7 @@ def flatten_list(wks_array, item_index):
 
     Args:
         wks_array (list): two-dimensional list
-        item_index (int): index of element in the nested list you want to flatten 
+        item_index (int): index of element in the nested list you want to flatten
 
     Returns:
         list: one-dimensional list
@@ -82,16 +76,16 @@ def find_index(list1, search):
 
 def check(env_row_check, wks_array_project, client_value):
     """If the contract row of the environmental database is missing
-    a contract number, the function will search the CD Projects 
-    database for rows with identical clients. Each row is then compared 
-    with the environmental row (env_row_check) for matching elements. 
-    The row that has a match for every element will return the 
+    a contract number, the function will search the CD Projects
+    database for rows with identical clients. Each row is then compared
+    with the environmental row (env_row_check) for matching elements.
+    The row that has a match for every element will return the
     corresponding contract number.
 
     Args:
         env_row_check (list): the row in env database with missing contract number
         wks_array_project (list): the nested list to search (CD Projects database)
-        client_value (str): the client 
+        client_value (str): the client
 
     Returns:
         str or int: the contract nummber
@@ -118,7 +112,7 @@ def from_projects_wks(starting_row, client_array, client_search, news_array, new
     Args:
         starting_row (list): CD Projects row with pertinent data
         client_array (list): Nested list from Client database
-        client_search (list): One dimensional list of clients 
+        client_search (list): One dimensional list of clients
         news_array (list): Nested list from Newspaper database
         news_search (list): One dimensional list of newspapers
 
@@ -165,7 +159,7 @@ def from_projects_wks(starting_row, client_array, client_search, news_array, new
 
     new_row.extend(starting_row[0:2])  # Client and Contract
     new_row.extend([" ", " ", " ", " ", " ", " ", " ",
-                   " ", " ", " ", " ", " ", " ", " "])  # 12 blank spaces
+                    " ", " ", " ", " ", " ", " ", " "])  # 12 blank spaces
     new_row.extend(starting_row[6:12])
     # 5 blank spaces for posting info
     new_row.extend([" ", " ", " ", " ", " "])
@@ -181,7 +175,7 @@ def from_projects_wks(starting_row, client_array, client_search, news_array, new
 
 
 def from_client_wks(new_row, client_row):
-    """ The function uses information from the Client database 
+    """ The function uses information from the Client database
     to populate a new list.
 
     Args:
@@ -278,8 +272,9 @@ for index, env_rows in enumerate(env_wks.iter_rows(min_row=2, values_only=True))
             env_row = row
         env_wks.cell(row=index+2, column=2).value = check(env_row,
                                                           project_array, env_wks.cell(row=index+2, column=1).value)
+        if env_wks.cell(row=index+2, column=2).value != None:
+            total_contract_updates += 1
         env_contract_list.append(env_wks.cell(row=index+2, column=2).value)
-        total_contract_updates += 1
 # add a check for empty client info here
 
 print('...Checking for missing projects...')
@@ -293,6 +288,13 @@ for i in project_contract_list:
         total_projects_added += 1
 
 print('...Saving Environmental Workbook...')
-env_wkb.save("CD Env Review_5.12.2020_NEP DO NOT OVERWRITE.xlsx")
+if total_contract_updates and total_projects_added > 0:
+    env_wkb.save("CD Env Review_5.12.2020_NEP DO NOT OVERWRITE.xlsx")
+    log_file = open("Env Changes.log", "a")
+    date = datetime.utcnow().strftime('%m-%d-%y')
+    log_file.write(f'\n\n{date}:\n')
+    log_file.write(
+        f'{total_contract_updates} Contract numbers were added to existing projects.\n{total_projects_added} Projects were added to the environmental database.\n\n')
+    log_file.close()
 print(f'{total_contract_updates} Contract numbers were added to existing projects.\n{total_projects_added} Projects were added to the environmental database.')
 print('Update process complete.')
