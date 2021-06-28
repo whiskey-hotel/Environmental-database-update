@@ -12,17 +12,17 @@
 
 
 from datetime import datetime
-from openpyxl import workbook, load_workbook
+from openpyxl import load_workbook
 print('...Update process intialized...')
 
 # open and define workbooks
 print('...Loading workbooks...')
 project_wkb = load_workbook(
-    "G:\\Shared drives\\Database\\Tables for Merge\\Working\\CD Projects.xlsx")
+    "G:\\Shared drives\\Database\\Tables for Merge\\CD Projects.xlsx")
 client_wkb = load_workbook(
-    "G:\\Shared drives\\Database\\Tables for Merge\\Working\\Clients.xlsx")
+    "G:\\Shared drives\\Database\\Tables for Merge\\Clients.xlsx")
 np_wkb = load_workbook(
-    "G:\\Shared drives\\Database\\Tables for Merge\\Working\\Newspapers_6.18.2020.xlsx")
+    "G:\\Shared drives\\Database\\Tables for Merge\\Newspapers_6.18.2020.xlsx")
 env_wkb = load_workbook(
     "G:\\Shared drives\\Database\\Tables for Merge\\Working\\CD Env Review_5.12.2020_NEP DO NOT OVERWRITE.xlsx")
 
@@ -289,7 +289,7 @@ for i in project_contract_list:
 
 print('...Saving Environmental Workbook...')
 if total_contract_updates and total_projects_added > 0:
-    env_wkb.save("CD Env Review_5.12.2020_NEP DO NOT OVERWRITE.xlsx")
+    env_wkb.save("CD Env Review.xlsx")
     log_file = open("Env Changes.log", "a")
     date = datetime.utcnow().strftime('%m-%d-%y')
     log_file.write(f'\n\n{date}:\n')
