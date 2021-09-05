@@ -267,14 +267,14 @@ total_projects_added = 0
 
 print('...Checking for existing projects with missing contract numbers...')
 for index, env_rows in enumerate(env_wks.iter_rows(min_row=2, values_only=True)):
-    if bool(env_wks.cell(row=index+2, column=1).value) is True and bool(env_wks.cell(row=index+2, column=2).value) is False:
-        for row in env_wks.iter_rows(min_row=index+2, max_row=index+2, values_only=True):
+    if bool(env_wks.cell(row=index + 2, column=1).value) is True and bool(env_wks.cell(row=index + 2, column=2).value) is False:
+        for row in env_wks.iter_rows(min_row=index + 2, max_row=index + 2, values_only=True):
             env_row = row
-        env_wks.cell(row=index+2, column=2).value = check(env_row,
-                                                          project_array, env_wks.cell(row=index+2, column=1).value)
-        if env_wks.cell(row=index+2, column=2).value:
+        env_wks.cell(row=index + 2, column=2).value = check(env_row,
+                                                            project_array, env_wks.cell(row=index + 2, column=1).value)
+        if env_wks.cell(row=index + 2, column=2).value:
             total_contract_updates += 1
-        env_contract_list.append(env_wks.cell(row=index+2, column=2).value)
+        env_contract_list.append(env_wks.cell(row=index + 2, column=2).value)
 # add a check for empty client info here
 # add a check for updated client info here
 
