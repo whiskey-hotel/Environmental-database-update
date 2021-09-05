@@ -16,17 +16,17 @@ Since our database worksheets are copied into excel worksheets, my first attempt
 
 After fumbling through google for some of the quirks of VBA, I happened upon the Python library called **openpyxl**.
 
-I have been using python a lot recently, so I was pretty happy to learn that I could manage excel worksheets with Python.
+I have been using Python a lot recently, so I was pretty happy to learn that I could manage excel worksheets with Python.
 
 ## How it works
 
 The basic idea of this script is to pull information from other active data worksheets and replace or add that information into my department’s worksheets. In this way, whenever an update is made by our DBA, I can simply run this script and update all of our data.
 
-To avoid using up too much of the computer’s memory from read and write functions, all of the pertinent data is read into an array at the beginning of execution, compared, altered, and then written back into the excel sheet one time.
+To avoid using up too much of the computer’s memory from read and write functions, all of the pertinent data is read into an array at the beginning of execution. The information is compared, altered and then appended to the end of the worksheet. While the read function is executed once. The write function occurs at the end of each iteration.
 
-The script then looks in our database for projects that do not have contract numbers. If a project doesn’t have a contract number, it makes it really hard for my team to work with and identify the correct project information. So, the script compares a number of columns with each other (five (5) columns as of 9/5/21). If the information in our worksheet makes a match with all of the identified columns of the other worksheet, the contract number of the other worksheet is copied into our worksheet.
+The script then looks in our database for projects that do not have contract numbers. If a project doesn’t have a contract number, it makes it really hard for my team to work with and identify the correct project information. So, the script compares a number of columns with each other (five (5) columns as of 9/5/21). If the information in our worksheet makes a match with all of the identified columns of the active worksheet, the contract number of the active worksheet is copied into our worksheet.
 
-The script then checks for new projects that have not been added to our database by comparing the projects in our worksheet to those of another active worksheet. I did this by comparing contract numbers (since this is always unique). If a contract number is not found, then the contract number and all of its associated information is then added to our database.
+The script then checks for new projects that have not been added to our database by comparing the projects in our worksheet to those of another active worksheet. I did this by comparing contract numbers (since this is always unique). If a contract number is not found, then the contract number and all of its associated information is then added to our worksheet.
 
 The information is then saved and logged for reference.
 
