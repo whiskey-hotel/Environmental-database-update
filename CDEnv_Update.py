@@ -1,39 +1,36 @@
 # -------------------------------------------------------------------------------
 # Name:         CDEnv_Update
 # Purpose:      Updates the Environmental Database with information from the
-#               CD Projects Database and the LDS.
+#               CD Projects Database, the Clients Database, and the Newspaper
+#               Database.
 #
 # Author:      Justin Thornton
 #
-# Created:     07/7/2021
-# Version:     0.2.0
+# Created:     06/17/2021
+# Version:     0.1.1
 # -------------------------------------------------------------------------------
 
-from openpyxl import load_workbook
-from datetime import datetime
-print('...Update process intialized...')
 
+from datetime import datetime
+from openpyxl import load_workbook
+print('...Update process intialized...')
 
 # open and define workbooks
 print('...Loading workbooks...')
 project_wkb = load_workbook(
-    "G:\\Shared drives\\Database\\Tables for Merge\\Working_Env\\CD Projects.xlsx")
-LDS_wkb = load_workbook(
-    "G:\\Shared drives\\Database\\Tables for Merge\\Working_Env\\LDS - Actual.xlsx"
-)
-# client_wkb = load_workbook(
-#     "G:\\Shared drives\\Database\\Tables for Merge\\Clients.xlsx")
-# np_wkb = load_workbook(
-#     "G:\\Shared drives\\Database\\Tables for Merge\\Newspapers_6.18.2020.xlsx")
+    "G:\\Shared drives\\Database\\Tables for Merge\\CD Projects.xlsx")
+client_wkb = load_workbook(
+    "G:\\Shared drives\\Database\\Tables for Merge\\Clients.xlsx")
+np_wkb = load_workbook(
+    "G:\\Shared drives\\Database\\Tables for Merge\\Newspapers_6.18.2020.xlsx")
 env_wkb = load_workbook(
-    "G:\\Shared drives\\Database\\Tables for Merge\\Working\\CD Env Review_5.12.2020_NEP DO NOT OVERWRITE.xlsx")
+    "G:\\Shared drives\\Database\\Tables for Merge\\CD Env Review.xlsx")
 
 # define worksheets
 print('...Loading worksheets...')
-LDS_wks = LDS_wkb["LDS - Actual"]
 project_wks = project_wkb["CD Projects"]
-#client_wks = client_wkb["Clients"]
-#np_wks = np_wkb["Newspapers"]
+client_wks = client_wkb["Clients"]
+np_wks = np_wkb["Newspapers"]
 env_wks = env_wkb["CD Env Review"]
 
 
@@ -230,7 +227,7 @@ def from_client_wks(new_row, client_row):
 
 
 def from_np_wks(new_row, np_array, np_line):
-    """The function uses information fromthe Newspaper database
+    """The function uses information from the Newspaper database
     to populate a new list.
 
     Args:
@@ -252,58 +249,21 @@ def from_np_wks(new_row, np_array, np_line):
     return new_row
 
 
-def LDS_check(LDS_row, ENV_row):
-    LDS_dict{
-        "address": LDS_row[2],
-        # "phys_address":
-        # "city_of":
-        # "zip_code":
-        # "city":
-        # "official_phone":
-        # "official_last":
-        # "official_first":
-        # official jr???
-        # "official_title":
-        # "main_last":
-        # "main_first":
-        # "main_title":
-        # "county":
-        # "main_email":
-        # "eng_full_name":
-        # Short eng???
-        # "entity_type":
-        # "newspaper":
-        # "days_published":
-        #"deadline date:"
-    }
-    for x in LDS_dict.values():
-        pass
-
-
 print('...defining intial arrays...')
 env_array = read_in_values(env_wks)
 project_array = read_in_values(project_wks)
-LDS_array = read_in_values(LDS_wks)
-# client_array = read_in_values(client_wks)
-# news_array = read_in_values(np_wks)
+client_array = read_in_values(client_wks)
+news_array = read_in_values(np_wks)
 
 print('...flattening arrays...')
 env_contract_list = flatten_list(env_array, 1)
 project_contract_list = flatten_list(project_array, 1)
-LDS_by_client = flatten_list(LDS_array, 1)
-# client_by_client = flatten_list(client_array, 0)
-# news_by_news = flatten_list(news_array, 0)
+client_by_client = flatten_list(client_array, 0)
+news_by_news = flatten_list(news_array, 0)
 
 # define trackers
 total_contract_updates = 0
 total_projects_added = 0
-
-print('...Updating Client Information...')
-for index, env_rows in enumerate(env_wks.iter_rows(min_row=2, values_only=True)):
-    for i in LDS_by_client:
-        if i == env_rows[0]:
-            row_index = find_index(LDS_by_client, i)
-    LDS_check(LDS_array[row_index], env_rows)
 
 print('...Checking for existing projects with missing contract numbers...')
 for index, env_rows in enumerate(env_wks.iter_rows(min_row=2, values_only=True)):
@@ -312,10 +272,11 @@ for index, env_rows in enumerate(env_wks.iter_rows(min_row=2, values_only=True))
             env_row = row
         env_wks.cell(row=index+2, column=2).value = check(env_row,
                                                           project_array, env_wks.cell(row=index+2, column=1).value)
-        if env_wks.cell(row=index+2, column=2).value != None:
+        if env_wks.cell(row=index+2, column=2).value:
             total_contract_updates += 1
         env_contract_list.append(env_wks.cell(row=index+2, column=2).value)
 # add a check for empty client info here
+# add a check for updated client info here
 
 print('...Checking for missing projects...')
 for i in project_contract_list:
@@ -328,7 +289,7 @@ for i in project_contract_list:
         total_projects_added += 1
 
 print('...Saving Environmental Workbook...')
-if total_contract_updates and total_projects_added > 0:
+if total_contract_updates or total_projects_added > 0:
     env_wkb.save("CD Env Review.xlsx")
     log_file = open("Env Changes.log", "a")
     date = datetime.utcnow().strftime('%m-%d-%y')
